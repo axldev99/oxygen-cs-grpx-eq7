@@ -3,19 +3,26 @@ import logging
 import requests
 import json
 import time
+import os
 
 
 class Main:
     def __init__(self):
         """Setup environment variables and default values."""
         self._hub_connection = None
-        self.HOST = None  # Setup your host here
-        self.TOKEN = None  # Setup your token here
+        self.HOST = os.getenv('HOST')
+        self.TOKEN = os.getenv('TOKEN')
 
-        self.TICKETS = 1  # Setup your tickets here
-        self.T_MAX = None  # Setup your max temperature here
-        self.T_MIN = None  # Setup your min temperature here
-        self.DATABASE = None  # Setup your database here
+        self.TICKETS = os.getenv('TICKETS', 1)
+        self.T_MAX = os.getenv('T_MAX', '25')
+        self.T_MIN = os.getenv('T_MIN', '18')
+        # self.database = os.getenv('DATABASE')
+
+        required_vars = ['HOST', 'TOKEN', 'DATABASE']
+        missing_vars = [var for var in required_vars if os.getenv(var) is None]
+
+        if missing_vars:
+            raise EnvironmentError(f"Missing environment variables: {', '.join(missing_vars)}")
 
     def __del__(self):
         if self._hub_connection != None:
@@ -81,14 +88,14 @@ class Main:
         details = json.loads(r.text)
         print(details, flush=True)
 
-    def send_event_to_database(self, timestamp, event):
-        """Save sensor data into database."""
-        try:
-            # To implement
-            pass
-        except requests.exceptions.RequestException as e:
-            # To implement
-            pass
+    # def send_event_to_database(self, timestamp, event):
+    #     """Save sensor data into database."""
+    #     try:
+    #         # To implement
+    #         pass
+    #     except requests.exceptions.RequestException as e:
+    #         # To implement
+    #         pass
 
 
 if __name__ == "__main__":
